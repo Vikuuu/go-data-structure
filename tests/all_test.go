@@ -62,3 +62,35 @@ func TestStack(t *testing.T) {
 	assert.Equal(t, s.Peek(), 69)
 	assert.Equal(t, s.Len(), 1)
 }
+
+func TestMazeSolver(t *testing.T) {
+	maze := [6]string{
+		"xxxxxxxxxx x",
+		"x        x x",
+		"x        x x",
+		"x xxxxxxxx x",
+		"x          x",
+		"x xxxxxxxxxx",
+	}
+
+	mazeResult := []ds.Point{
+		{X: 10, Y: 0},
+		{X: 10, Y: 1},
+		{X: 10, Y: 2},
+		{X: 10, Y: 3},
+		{X: 10, Y: 4},
+		{X: 9, Y: 4},
+		{X: 8, Y: 4},
+		{X: 7, Y: 4},
+		{X: 6, Y: 4},
+		{X: 5, Y: 4},
+		{X: 4, Y: 4},
+		{X: 3, Y: 4},
+		{X: 2, Y: 4},
+		{X: 1, Y: 4},
+		{X: 1, Y: 5},
+	}
+
+	result := ds.MazeSolver(maze[:], "x", ds.Point{X: 10, Y: 0}, ds.Point{X: 1, Y: 5})
+	assert.Equal(t, mazeResult, result)
+}
