@@ -1,18 +1,22 @@
 package datstr
 
-func partition(list *[]int, l, h int) int {
-	pivot := h
+func partition(arr *[]int, l, h int) int {
+	pivot := (*arr)[h]
 	// do the sorting here
-	i := l
-	for j := l; j < h+1; j++ {
-		if (*list)[j] < (*list)[pivot] {
-			(*list)[j], (*list)[i] = (*list)[i], (*list)[j]
-			i++
+	idx := l - 1
+	for i := l; i < h; i++ {
+		if (*arr)[i] <= pivot {
+			idx++
+			tmp := (*arr)[i]
+			(*arr)[i] = (*arr)[idx]
+			(*arr)[idx] = tmp
 		}
 	}
-	(*list)[pivot], (*list)[i] = (*list)[i], (*list)[pivot]
+	idx++
+	(*arr)[h] = (*arr)[idx]
+	(*arr)[idx] = pivot
 
-	return i
+	return idx
 }
 
 func qsort(list *[]int, l, h int) {
