@@ -94,3 +94,10 @@ func TestMazeSolver(t *testing.T) {
 	result := ds.MazeSolver(maze[:], "x", ds.Point{X: 10, Y: 0}, ds.Point{X: 1, Y: 5})
 	assert.Equal(t, mazeResult, result)
 }
+
+func TestQuickSort(t *testing.T) {
+	arr := []int{9, 3, 7, 4, 69, 420, 42}
+
+	out := ds.QuickSort(&arr)
+	assert.Equal(t, out, []int{3, 4, 7, 9, 42, 69, 420})
+}
