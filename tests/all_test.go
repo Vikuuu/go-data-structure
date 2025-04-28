@@ -101,3 +101,35 @@ func TestQuickSort(t *testing.T) {
 	out := ds.QuickSort(&arr)
 	assert.Equal(t, out, []int{3, 4, 7, 9, 42, 69, 420})
 }
+
+func ListTest(t *testing.T, list *ds.DoublyLinkedList) {
+	list.Append(5)
+	list.Append(7)
+	list.Append(9)
+
+	assert.Equal(t, 9, list.Get(2))
+	assert.Equal(t, 7, list.RemoveAt(1))
+	assert.Equal(t, 2, list.Length())
+
+	list.Append(11)
+	assert.Equal(t, 9, list.RemoveAt(1))
+	assert.Nil(t, list.Remove(9))
+	assert.Equal(t, 5, list.RemoveAt(0))
+	assert.Equal(t, 11, list.RemoveAt(0))
+	assert.Equal(t, 0, list.Length())
+
+	list.Prepend(5)
+	list.Prepend(7)
+	list.Prepend(9)
+
+	assert.Equal(t, 5, list.Get(2))
+	assert.Equal(t, 9, list.Get(0))
+	assert.Equal(t, 9, list.Remove(9))
+	assert.Equal(t, 2, list.Length())
+	assert.Equal(t, 7, list.Get(0))
+}
+
+func TestDoublyLinkedList(t *testing.T) {
+	list := ds.NewDoublyLinkedList()
+	ListTest(t, list)
+}
