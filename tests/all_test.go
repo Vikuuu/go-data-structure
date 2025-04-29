@@ -133,3 +133,60 @@ func TestDoublyLinkedList(t *testing.T) {
 	list := ds.NewDoublyLinkedList()
 	ListTest(t, list)
 }
+
+func TestBTTraversal(t *testing.T) {
+	tree := &ds.BNode{
+		Val: 20,
+		Right: &ds.BNode{
+			Val: 50,
+			Right: &ds.BNode{
+				Val:   100,
+				Right: nil,
+				Left:  nil,
+			},
+			Left: &ds.BNode{
+				Val: 30,
+				Right: &ds.BNode{
+					Val:   45,
+					Right: nil,
+					Left:  nil,
+				},
+				Left: &ds.BNode{
+					Val:   29,
+					Right: nil,
+					Left:  nil,
+				},
+			},
+		},
+		Left: &ds.BNode{
+			Val: 10,
+			Right: &ds.BNode{
+				Val:   15,
+				Right: nil,
+				Left:  nil,
+			},
+			Left: &ds.BNode{
+				Val: 5,
+				Right: &ds.BNode{
+					Val:   7,
+					Right: nil,
+					Left:  nil,
+				},
+				Left: nil,
+			},
+		},
+	}
+
+	assert.Equal(t,
+		[]int{5, 7, 10, 15, 20, 29, 30, 45, 50, 100},
+		ds.InOrderSearch(tree),
+	)
+	assert.Equal(t,
+		[]int{20, 10, 5, 7, 15, 50, 30, 29, 45, 100},
+		ds.PreOrderSearch(tree),
+	)
+	assert.Equal(t,
+		[]int{7, 5, 15, 10, 29, 45, 30, 100, 50, 20},
+		ds.PostOrderSearch(tree),
+	)
+}
