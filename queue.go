@@ -1,27 +1,27 @@
 package datstr
 
-type queueNode[T any] struct {
-	val  T
-	next *queueNode[T]
+type queueNode struct {
+	val  any
+	next *queueNode
 }
 
-type Queue[T any] struct {
-	head   *queueNode[T]
-	tail   *queueNode[T]
+type Queue struct {
+	head   *queueNode
+	tail   *queueNode
 	length int
 }
 
-func NewQueue[T any]() *Queue[T] {
-	return &Queue[T]{
+func NewQueue() *Queue {
+	return &Queue{
 		head:   nil,
 		tail:   nil,
 		length: 0,
 	}
 }
 
-func (q *Queue[T]) Enqueue(val T) {
+func (q *Queue) Enqueue(val any) {
 	q.length++
-	n := &queueNode[T]{val: val, next: nil}
+	n := &queueNode{val: val, next: nil}
 
 	if q.tail == nil {
 		q.tail = n
@@ -34,10 +34,9 @@ func (q *Queue[T]) Enqueue(val T) {
 	q.tail = n
 }
 
-func (q *Queue[T]) Deque() T {
+func (q *Queue) Deque() any {
 	if q.head == nil {
-		var zero T
-		return zero
+		return nil
 	}
 
 	q.length--
@@ -54,10 +53,10 @@ func (q *Queue[T]) Deque() T {
 	return n.val
 }
 
-func (q *Queue[T]) Peek() T {
+func (q *Queue) Peek() any {
 	return q.head.val
 }
 
-func (q *Queue[T]) Len() int {
+func (q *Queue) Len() int {
 	return q.length
 }
