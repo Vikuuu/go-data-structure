@@ -154,3 +154,8 @@ func TestBTBFS(t *testing.T) {
 	assert.True(t, ds.BFS(tree, 7))
 	assert.False(t, ds.BFS(tree, 69))
 }
+
+func TestCompareBT(t *testing.T) {
+	assert.True(t, ds.CompareBT(tree, tree))
+	assert.False(t, ds.CompareBT(tree, tree2))
+}
