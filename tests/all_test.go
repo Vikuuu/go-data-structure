@@ -24,7 +24,7 @@ func TestTwoCrystalBalls(t *testing.T) {
 }
 
 func TestQueue(t *testing.T) {
-	q := ds.NewQueue()
+	q := ds.NewQueue[int]()
 	q.Enqueue(5)
 	q.Enqueue(7)
 	q.Enqueue(9)
@@ -36,7 +36,7 @@ func TestQueue(t *testing.T) {
 	assert.Equal(t, q.Deque(), 9)
 	assert.Equal(t, q.Peek(), 11)
 	assert.Equal(t, q.Deque(), 11)
-	assert.Nil(t, q.Deque())
+	assert.Equal(t, 0, q.Deque())
 	assert.Equal(t, q.Len(), 0)
 }
 
