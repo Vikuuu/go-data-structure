@@ -165,3 +165,47 @@ func TestDFSonBST(t *testing.T) {
 	assert.True(t, ds.DFSonBST(tree, 7))
 	assert.False(t, ds.DFSonBST(tree, 69))
 }
+
+func TestMinHeap(t *testing.T) {
+	heap := ds.NewMinHeap()
+	assert.Equal(t, 0, heap.Len())
+
+	heap.Add(5)
+	heap.Add(3)
+	heap.Add(69)
+	heap.Add(420)
+	heap.Add(4)
+	heap.Add(1)
+	heap.Add(8)
+	heap.Add(7)
+
+	assert.Equal(t, 8, heap.Len())
+
+	assert.Equal(t, 1, heap.Remove())
+	assert.Equal(t, 3, heap.Remove())
+	assert.Equal(t, 4, heap.Remove())
+	assert.Equal(t, 5, heap.Remove())
+
+	assert.Equal(t, 4, heap.Len())
+
+	assert.Equal(t, 7, heap.Remove())
+	assert.Equal(t, 8, heap.Remove())
+	assert.Equal(t, 69, heap.Remove())
+	assert.Equal(t, 420, heap.Remove())
+
+	assert.Equal(t, 0, heap.Len())
+}
+
+func TestBFSGraphMatrix(t *testing.T) {
+	assert.Equal(t, []int{0, 1, 4, 5, 6}, ds.BFSGraphMatrix(matrix2, 0, 6))
+	assert.Equal(t, []int{}, ds.BFSGraphMatrix(matrix2, 6, 0))
+}
+
+func TestDFSGraphList(t *testing.T) {
+	assert.Equal(t, []int{0, 1, 4, 5, 6}, ds.DFSGraphList(list2, 0, 6))
+	assert.Equal(t, []int{}, ds.DFSGraphList(list2, 6, 0))
+}
+
+func TestDijkstraList(t *testing.T) {
+	assert.Equal(t, []int{0, 1, 4, 5, 6}, ds.DijkstraList(0, 6, list1))
+}
