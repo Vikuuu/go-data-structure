@@ -6,13 +6,13 @@ import (
 )
 
 type trieNode struct {
-	value  rune
+	value  string
 	isWord bool
 	links  []*trieNode
 	parent *trieNode
 }
 
-func NewTrieNode(val rune) *trieNode {
+func NewTrieNode(val string) *trieNode {
 	return &trieNode{
 		value:  val,
 		isWord: false,
@@ -26,39 +26,37 @@ type Trie struct {
 }
 
 func NewTrie(length int) *Trie {
-	r := ' '
 	return &Trie{
-		head: NewTrieNode(r),
+		head: NewTrieNode(""),
 	}
 }
 
-func (t *Trie) Insert(val string, isWord bool) {
+func (t *Trie) Insert(val string) {
 	cur := t.head
 	for _, v := range strings.ToLower(val) {
-		v = v - 'a'
-		node := cur.links[v]
-		if node != nil {
-			continue
+		nv := v - 'a'
+		childNode := cur.links[nv]
+		if childNode == nil {
+			childNode = NewTrieNode(string(v))
+			cur.links[nv] = childNode
 		}
-		newNode := NewTrieNode(v)
-		newNode.parent = cur
-		node = newNode
-		cur = node
+		childNode.parent = cur
+		cur = childNode
 	}
-	cur.isWord = isWord
+	cur.isWord = true
 }
 
 func (t *Trie) Search(val string) bool {
 	cur := t.head
 	for _, v := range strings.ToLower(val) {
-		v = v - 'a'
-		node := cur.links[v]
+		nv := v - 'a'
+		node := cur.links[nv]
 		if node == nil {
 			return false
 		}
-		cur = node.links[v]
+		cur = node
 	}
-	return true
+	return cur.isWord
 }
 
 func (t *Trie) Delete(val string) {
@@ -67,17 +65,31 @@ func (t *Trie) Delete(val string) {
 	for _, v := range strings.ToLower(val) {
 		v = v - 'a'
 		node := cur.links[v]
+		if node == nil { // word does not exists
+			return
+		}
 		stack = append(stack, node)
+		cur = node
 	}
+
+	if !cur.isWord {
+		return
+	}
+	cur.isWord = false
 	slices.Reverse(stack)
 	for _, s := range stack {
-		// if slice not contains all the nil value
-		allNilVal := slices.ContainsFunc(s.links, func(t *trieNode) bool {
-			return t != nil
-		})
-		if allNilVal {
-			parent := s.parent
-			v := s.value - 'a'
+		var hasChildren bool
+		for _, l := range s.links {
+			if l != nil {
+				hasChildren = true
+			}
+		}
+		if s.isWord || hasChildren {
+			break
+		}
+		parent := s.parent
+		if parent != nil {
+			v := rune(s.value[0]) - 'a'
 			parent.links[v] = nil
 		}
 	}
