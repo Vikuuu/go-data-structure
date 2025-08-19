@@ -1,23 +1,27 @@
 package datstr
 
 import (
-	"slices"
+	"errors"
 	"strings"
 )
 
+var (
+	ErrNoSuchWord  = errors.New("no such word in trie")
+	ErrNotWord     = errors.New("not word")
+	ErrEmptyWord   = errors.New("empty word")
+	ErrInvalidRune = errors.New("invalid character")
+)
+
 type trieNode struct {
-	value  string
-	isWord bool
-	links  []*trieNode
-	parent *trieNode
+	value    rune
+	children [26]*trieNode
+	parent   *trieNode
+	isWord   bool
 }
 
-func NewTrieNode(val string) *trieNode {
+func NewTrieNode(val rune) *trieNode {
 	return &trieNode{
-		value:  val,
-		isWord: false,
-		links:  make([]*trieNode, 26),
-		parent: nil,
+		value: val,
 	}
 }
 
@@ -25,72 +29,114 @@ type Trie struct {
 	head *trieNode
 }
 
-func NewTrie(length int) *Trie {
-	return &Trie{
-		head: NewTrieNode(""),
-	}
+func NewTrie() *Trie {
+	var r rune
+	return &Trie{head: NewTrieNode(r)}
 }
 
-func (t *Trie) Insert(val string) {
+func getIndex(r rune) (int, error) {
+	if r < 'a' || r > 'z' {
+		return -1, ErrInvalidRune
+	}
+	return int(r - 'a'), nil
+}
+
+func (t *Trie) Insert(word string) error {
+	if word == "" {
+		return ErrEmptyWord
+	}
 	cur := t.head
-	for _, v := range strings.ToLower(val) {
-		nv := v - 'a'
-		childNode := cur.links[nv]
-		if childNode == nil {
-			childNode = NewTrieNode(string(v))
-			cur.links[nv] = childNode
+	for _, r := range strings.ToLower(word) {
+		idx, err := getIndex(r)
+		if err != nil {
+			return err
 		}
-		childNode.parent = cur
-		cur = childNode
+
+		child := cur.children[idx]
+		if child == nil {
+			child = NewTrieNode(r)
+			child.parent = cur
+			cur.children[idx] = child
+		}
+		cur = child
 	}
 	cur.isWord = true
+	return nil
 }
 
-func (t *Trie) Search(val string) bool {
-	cur := t.head
-	for _, v := range strings.ToLower(val) {
-		nv := v - 'a'
-		node := cur.links[nv]
-		if node == nil {
-			return false
-		}
-		cur = node
+func (t *Trie) Search(word string) error {
+	if word == "" {
+		return ErrEmptyWord
 	}
-	return cur.isWord
+	cur := t.head
+	for _, r := range strings.ToLower(word) {
+		idx, err := getIndex(r)
+		if err != nil {
+			return err
+		}
+
+		child := cur.children[idx]
+		if child == nil {
+			return ErrNoSuchWord
+		}
+		cur = child
+	}
+	if cur.isWord {
+		return nil
+	}
+	return ErrNoSuchWord
 }
 
-func (t *Trie) Delete(val string) {
+func (t *Trie) Delete(word string) error {
+	if word == "" {
+		return ErrNotWord
+	}
+
 	cur := t.head
-	stack := []*trieNode{}
-	for _, v := range strings.ToLower(val) {
-		v = v - 'a'
-		node := cur.links[v]
-		if node == nil { // word does not exists
-			return
+	for _, r := range strings.ToLower(word) {
+		idx, err := getIndex(r)
+		if err != nil {
+			return err
 		}
-		stack = append(stack, node)
-		cur = node
+
+		child := cur.children[idx]
+		if child == nil {
+			return ErrNoSuchWord
+		}
+		cur = child
 	}
 
 	if !cur.isWord {
-		return
+		return ErrNotWord
 	}
 	cur.isWord = false
-	slices.Reverse(stack)
-	for _, s := range stack {
-		var hasChildren bool
-		for _, l := range s.links {
-			if l != nil {
-				hasChildren = true
-			}
-		}
-		if s.isWord || hasChildren {
+
+	parent := cur.parent
+	for parent != nil {
+		if t.hasChildren(parent) || cur.isWord {
 			break
 		}
-		parent := s.parent
-		if parent != nil {
-			v := rune(s.value[0]) - 'a'
-			parent.links[v] = nil
+		idx, err := getIndex(cur.value)
+		if err != nil {
+			return err
+		}
+
+		parent.children[idx] = nil
+		cur = parent
+		parent = parent.parent
+	}
+	return nil
+}
+
+func (t *Trie) hasChildren(parent *trieNode) bool {
+	count := 0
+	for _, pointer := range parent.children {
+		if pointer != nil {
+			count++
 		}
 	}
+	if count > 1 {
+		return true
+	}
+	return false
 }
