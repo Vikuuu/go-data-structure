@@ -232,3 +232,46 @@ func TestLRU(t *testing.T) {
 	assert.Equal(t, 420, lru.Get("bar"))
 	assert.Equal(t, 69, lru.Get("foo"))
 }
+
+func TestTrie(t *testing.T) {
+	tr := ds.NewTrie()
+
+	// Insertion & Search
+	words := []string{"go", "gopher", "Game", "goal"}
+	for _, w := range words {
+		err := tr.Insert(w)
+		assert.NoError(t, err)
+	}
+
+	for _, want := range []string{"go", "gopher", "game", "goal"} {
+		err := tr.Search(want)
+		assert.NoError(t, err)
+	}
+
+	err := tr.Search("ghost")
+	assert.ErrorIs(t, err, ds.ErrNoSuchWord)
+
+	err = tr.Search("g")
+	assert.ErrorIs(t, err, ds.ErrNoSuchWord)
+
+	// Deletion & Search
+	err = tr.Delete("go")
+	assert.NoError(t, err)
+
+	err = tr.Search("go")
+	assert.ErrorIs(t, err, ds.ErrNoSuchWord)
+
+	err = tr.Delete("gopher")
+	assert.NoError(t, err)
+
+	err = tr.Search("gopher")
+	assert.ErrorIs(t, err, ds.ErrNoSuchWord)
+
+	err = tr.Search("game")
+	assert.NoError(t, err)
+	err = tr.Search("Goal")
+	assert.NoError(t, err)
+
+	err = tr.Delete("carbon")
+	assert.ErrorIs(t, err, ds.ErrNoSuchWord)
+}
